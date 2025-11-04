@@ -1,13 +1,21 @@
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config, pool
 from alembic import context
-import os, sys
+import os
+import sys
 
-# ✅ Add this to make 'app' importable
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+# ✅ Ensure Alembic can find 'app' package
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
+# ✅ Import Base and ALL models before setting metadata
 from app.db.session import Base
-from app.db.models import products, inventory  # Import your models here
+
+# Import all model modules so Alembic sees them
+from app.db.models import (
+    users,
+    products,
+    inventory,
+)
 
 # this is the Alembic Config object
 config = context.config
@@ -15,7 +23,7 @@ config = context.config
 # Interpret the config file for Python logging.
 fileConfig(config.config_file_name)
 
-# ✅ Set up metadata for autogenerate
+# ✅ Now Alembic will detect all models
 target_metadata = Base.metadata
 
 
@@ -23,8 +31,12 @@ def run_migrations_offline():
     """Run migrations in 'offline' mode."""
     url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url, target_metadata=target_metadata, literal_binds=True, dialect_opts={"paramstyle": "named"}
+        url=url,
+        target_metadata=target_metadata,
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
     )
+
     with context.begin_transaction():
         context.run_migrations()
 

@@ -10,3 +10,4 @@ aio-pika
 python-dotenv
 python-multipart
 pandas
+alembic==1.13.1
